@@ -1,0 +1,59 @@
+# ==========================================
+# 1. File Hasil Build (Binary)
+# ==========================================
+# Ganti "lapor-api" dengan nama file output build Anda jika berbeda
+lapor-api
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# ==========================================
+# 2. File Rahasia & Konfigurasi Lingkungan
+# ==========================================
+.env
+.env.*
+!.env.example # (Kecuali file .env.example, ini boleh di-push sebagai template)
+
+# ==========================================
+# 3. Direktori Spesifik Proyek Lapor Lingkungan
+# ==========================================
+# Abaikan foto/file laporan warga yang diunggah secara lokal
+uploads/*
+!uploads/.gitkeep # (Biarkan folder uploads tetap ada di git, tapi isinya kosong)
+
+# ==========================================
+# 4. Dependency (Jika menggunakan folder vendor)
+# ==========================================
+/vendor/
+
+# ==========================================
+# 5. File Log & Coverage Test
+# ==========================================
+*.log
+coverage.txt
+coverage.out
+profile.out
+
+# ==========================================
+# 6. Konfigurasi Editor & IDE (Sampah Lokal)
+# ==========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ==========================================
+# 7. File Sistem Operasi
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
