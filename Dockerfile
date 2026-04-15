@@ -12,8 +12,8 @@ COPY . .
 # Build binary Go
 # Tambahkan GOTOOLCHAIN=auto agar Docker bisa mendownload SDK 1.25 jika diperlukan secara otomatis
 ENV GOTOOLCHAIN=auto
-RUN CGO_ENABLED=0 GOOS=linux go build -mod=vendor -v -o lapor-api ./cmd/api/main.go
-
+# GANTI MENJADI INI (Hapus -mod=vendor):
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o lapor-api ./cmd/api/main.go
 # Tahap 2: Runner
 # Tahap 2: Runner
 FROM alpine:latest
