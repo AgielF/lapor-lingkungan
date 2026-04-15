@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgres:15-alpine
-    container_name: lapor-db # Memberi nama spesifik agar mudah diidentifikasi
+    container_name: lapor-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: rahasia
@@ -14,9 +14,15 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - lapor-be-network
+    # Tambahkan ini agar Docker tahu kapan DB sudah siap
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lapor_lingkungan"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build: . # Titik (.) berarti build dari Dockerfile di folder ini
+    build: .
     container_name: lapor-api
     ports:
       - "8080:8080"
@@ -27,8 +33,10 @@ services:
       DB_NAME: lapor_lingkungan
       DB_PORT: 5432
       JWT_SECRET: rahasia_negara_123
+      TZ: Asia/Jakarta
     depends_on:
-      - db
+      db:
+        condition: service_healthy # Backend nunggu DB 'sehat' baru jalan
     networks:
       - lapor-be-network
 

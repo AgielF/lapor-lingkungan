@@ -1,0 +1,39 @@
+name: Deploy Backend Lapor
+
+on:
+  push:
+    branches: [ be ] # Otomatis jalan saat Anda push ke branch main
+
+jobs:
+  build-and-push:
+    name: Build Docker Image and Push to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/lapor-backend:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/lapor-backend:latest
+
+  deploy:
+    name: Deploy to GCP VM via Bastion
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH via Frontend to Backend
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.GCP_FE_IP }}
+          username: agielnanda2004
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            # Mengirim perintah dari Frontend ke Backend (10.0.1.3)
+            ssh -o StrictHostKeyChecking=no agielnanda2004@10.0.1.3 "cd ~/deploy-backend && ./update.sh"
