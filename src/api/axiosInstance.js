@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // Gunakan import.meta.env untuk membaca file .env di Vite
-  baseURL: import.meta.env.VITE_API_URL, 
+    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
 });
 
 // Middleware Axios: Otomatis selipkan Token setiap kali request dikirim
