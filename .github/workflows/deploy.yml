@@ -2,7 +2,7 @@ name: Deploy Frontend to GCP
 
 on:
   push:
-    branches: [ fe ] # Berjalan hanya saat push ke branch be
+    branches: [ fe ] 
 
 jobs:
   build-and-push:
@@ -20,7 +20,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend # Pastikan path folder frontend Anda benar
+          context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/lapor-frontend:latest
           # Menyuntikkan IP Backend ke dalam React saat proses build
