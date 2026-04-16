@@ -12,7 +12,8 @@ COPY . .
 RUN npm run build
 
 # --- Tahap 2: Production Stage (Nginx) ---
-FROM nginx:stable-alpine
+# Tambahkan -v (verbose) atau pastikan output terlihat
+RUN npm run build --v
 # Salin hasil build dari tahap 1
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 # Salin konfigurasi Nginx Anda
