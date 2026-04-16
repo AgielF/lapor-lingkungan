@@ -1,93 +1,94 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import api from '../api/axiosInstance';
+import Navbar from '../components/Navbar';
 
-export default function LandingPage() {
+// HARDCODE: Pastikan ini sama dengan baseURL di axios
+const API_BASE = "/api";
+
+export default function LaporankuPage() {
+  const [laporans, setLaporans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLaporanku();
+  }, []);
+
+  const fetchLaporanku = async () => {
+    try {
+      const res = await api.get('/laporanku'); // Ini akan menjadi /api/laporanku
+      setLaporans(res.data?.data || []);
+    } catch (err) {
+      console.error(err);
+      setLaporans([]);
+      alert('Gagal mengambil data laporan');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi Sakti untuk menangani URL Gambar
+  const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/400x300?text=Tanpa+Foto";
+    
+    // Jika sudah URL penuh (GCS), langsung tampilkan
+    if (url.startsWith('http')) return url;
+    
+    // Jika path lama (uploads/...), paksa lewat /api/ agar Nginx yang urus
+    return `${API_BASE}/${url}`.replace(/([^:]\/)\/+/g, "$1");
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      {/* Navbar Khusus Landing Page */}
-      <nav className="bg-white shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-50">
-        <div className="font-extrabold text-2xl text-blue-600 flex items-center gap-2">
-          <span>🌱</span> LaporLingkungan
-        </div>
-        <div className="flex gap-4">
-          <Link to="/login" className="px-5 py-2 text-blue-600 font-bold hover:bg-blue-50 rounded-lg transition">
-            Masuk
-          </Link>
-          <Link to="/register" className="px-5 py-2 bg-blue-600 text-white font-bold hover:bg-blue-700 rounded-lg shadow-md transition">
-            Daftar
-          </Link>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto px-8 pt-20 pb-24 text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-slate-800 tracking-tight mb-6">
-            Bantu Wujudkan Lingkungan <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
-              Bersih dan Aman
-            </span>
-          </h1>
-          <p className="mt-4 text-xl text-slate-500 max-w-2xl mx-auto mb-10">
-            Platform pelaporan warga yang cepat, transparan, dan terintegrasi. 
-            Satu ketukan Anda dapat membawa perubahan besar bagi kota kita.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link to="/register" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
-              Mulai Lapor Sekarang 🚀
-            </Link>
-            <a href="#fitur" className="px-8 py-4 bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 text-lg font-bold rounded-full transition-all">
-              Pelajari Lebih Lanjut
-            </a>
+      <Navbar />
+      <div className="p-6 max-w-5xl mx-auto">
+        <h1 className="text-3xl font-extrabold text-slate-800 mb-6">Riwayat Laporan Saya</h1>
+        
+        {loading ? (
+          <div className="text-center py-10 text-slate-500 font-medium">Memuat data dari server...</div>
+        ) : laporans.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+            <p className="text-slate-400 text-lg">Anda belum memiliki riwayat laporan.</p>
           </div>
-        </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {laporans.map((item) => (
+              <div key={item.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-bold text-lg text-slate-800">{item.kategori}</h3>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    item.status === 'Selesai' ? 'bg-green-100 text-green-700' :
+                    item.status === 'Diproses' ? 'bg-yellow-100 text-yellow-700' :
+                    item.status === 'Ditolak' ? 'bg-red-100 text-red-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {item.status || 'Terkirim'}
+                  </span>
+                </div>
+                
+                <div className="relative overflow-hidden rounded-xl mb-4 bg-slate-50 aspect-video flex items-center justify-center">
+                  <img 
+                    src={getImageUrl(item.foto_url)}
+                    alt="Bukti Laporan" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.src = "https://via.placeholder.com/400x300?text=Gagal+Memuat+Gambar" }}
+                  />
+                </div>
+                
+                <div className="text-sm text-slate-600 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+                  <div className="flex justify-between">
+                    <span>Lat: {item.latitude?.toFixed(5)}</span>
+                    <span>Lng: {item.longitude?.toFixed(5)}</span>
+                  </div>
+                </div>
+                
+                <div className="text-[10px] uppercase tracking-wider text-slate-400 text-right font-bold">
+                  Dibuat pada: {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Features Section */}
-      <div id="fitur" className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-extrabold text-slate-800">Mengapa Menggunakan Lapor Lingkungan?</h2>
-            <p className="text-slate-500 mt-4">Tiga langkah mudah untuk lingkungan yang lebih baik.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
-              <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6">
-                📍
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Tepat Sasaran</h3>
-              <p className="text-slate-600">Tandai lokasi masalah secara akurat menggunakan peta interaktif langsung dari perangkat Anda.</p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
-              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6">
-                📸
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Bukti Nyata</h3>
-              <p className="text-slate-600">Unggah foto sebagai bukti valid. Tim terkait akan langsung memvalidasi laporan berdasarkan foto Anda.</p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
-              <div className="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6">
-                ⚡
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Pantau Prosesnya</h3>
-              <p className="text-slate-600">Transparansi penuh. Lacak status laporan Anda mulai dari "Terkirim" hingga "Selesai".</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 py-8 text-center">
-        <p className="text-slate-400 font-medium">
-          &copy; {new Date().getFullYear()} LaporLingkungan. Dibangun untuk masyarakat.
-        </p>
-      </footer>
     </div>
   );
 }

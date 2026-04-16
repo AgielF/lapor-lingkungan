@@ -3,7 +3,7 @@ import api from '../api/axiosInstance';
 import Navbar from '../components/Navbar';
 
 // Ambil Base URL dari .env (Vite)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE = "/api";
 
 export default function LaporankuPage() {
   const [laporans, setLaporans] = useState([]);

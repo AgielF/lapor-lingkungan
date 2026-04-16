@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // Gunakan import.meta.env untuk membaca file .env di Vite
-    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    // Hardcode: Tanpa variabel lingkungan agar tidak undefined saat build
+    baseURL: '/api', 
 });
 
-// Middleware Axios: Otomatis selipkan Token setiap kali request dikirim
+// Middleware selipkan JWT Token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
