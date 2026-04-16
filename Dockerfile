@@ -15,10 +15,10 @@ ENV GOTOOLCHAIN=auto
 # GANTI MENJADI INI (Hapus -mod=vendor):
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o lapor-api ./cmd/api/main.go
 # Tahap 2: Runner
-# Tahap 2: Runner
+
 FROM alpine:latest
 # Install tzdata agar zona waktu Asia/Jakarta dikenali
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata ca-certificates
 
 WORKDIR /app
 COPY --from=builder /app/lapor-api .

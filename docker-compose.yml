@@ -34,6 +34,8 @@ services:
       DB_PORT: 5432
       JWT_SECRET: rahasia_negara_123
       TZ: Asia/Jakarta
+      # TAMBAHKAN INI (Sesuaikan dengan nama bucket kamu yang asli)
+      GCS_BUCKET_NAME: lapor-bucket-agiel
     depends_on:
       db:
         condition: service_healthy # Backend nunggu DB 'sehat' baru jalan
