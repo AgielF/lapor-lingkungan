@@ -1,15 +1,8 @@
 version: '3.8'
-
 services:
   frontend:
-    build: . # Build dari Dockerfile di folder ini
-    container_name: lapor-ui
+    image: agielf/lapor-frontend:latest
+    container_name: lapor-frontend
     ports:
-      - "5173:80" # Akses di browser via localhost:5173, diteruskan ke port 80 Nginx
-    # (Opsional) Jika Anda butuh environment variable saat runtime, tambahkan di sini
-    # environment:
-    #   VITE_API_URL: http://localhost:8080/api
-
-networks:
-  default:
-    name: lapor-fe-network
+      - "80:80"
+    restart: always
