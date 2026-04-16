@@ -75,7 +75,7 @@ func KirimLaporan(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response.Error("Gagal mengunggah foto ke Cloud Storage"))
 		return
 	}
-	// -------------------------------------
+	// ------------------------------------------
 
 	laporanBaru := model.Laporan{
 		UserID:    uint(userID.(float64)),
